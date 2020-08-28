@@ -14,7 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.db import OperationalError
 from django.urls import path, re_path, include
+from django.views.generic import TemplateView
+from django.contrib.auth import views as auth_views
+
 from .routers import router
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -32,10 +36,23 @@ schema_view = get_schema_view(
     public=True,
     permission_classes=(permissions.AllowAny,),
 )
+
+try:
+    from posts.models import Categories
+    if len(Categories.objects.all()) == 0:
+        root = Categories(parent_category=None, is_root=True, name='root', description='root', slug='')
+        root.save()
+except OperationalError:
+    pass
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('rest/', include(router.urls)),
     path('', include('bloom.urls')),
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('api-auth/', include('rest_framework.urls')),
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui')
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('register/', auth_views.LoginView.as_view(), name='register'),
+    path('logout/', auth_views.LogoutView.as_view(), {'next_page': 'login'}, name='logout'),
 ]
