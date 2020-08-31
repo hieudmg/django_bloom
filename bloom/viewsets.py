@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from posts.models import Posts, Categories
+from post.models import Posts, Categories
 from .serializers import PostsSerializer, CategoriesSerializer
 from rest_framework import permissions
 

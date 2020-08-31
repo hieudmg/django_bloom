@@ -17,7 +17,6 @@ from django.contrib import admin
 from django.db import OperationalError
 from django.urls import path, re_path, include
 from django.views.generic import TemplateView
-from django.contrib.auth import views as auth_views
 
 from .routers import router
 from rest_framework import permissions
@@ -38,7 +37,7 @@ schema_view = get_schema_view(
 )
 
 try:
-    from posts.models import Categories
+    from post.models import Categories
     if len(Categories.objects.all()) == 0:
         root = Categories(parent_category=None, is_root=True, name='root', description='root', slug='')
         root.save()
@@ -52,7 +51,9 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('api-auth/', include('rest_framework.urls')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('login/', auth_views.LoginView.as_view(), name='login'),
-    path('register/', auth_views.LoginView.as_view(), name='register'),
-    path('logout/', auth_views.LogoutView.as_view(), {'next_page': 'login'}, name='logout'),
+    # path('login/', auth_views.LoginView.as_view(), name='login'),
+    # path('register/', auth_views.LoginView.as_view(), name='register'),
+    # path('logout/', auth_views.LogoutView.as_view(), {'next_page': 'login'}, name='logout'),
+
+    path("account/", include("account.urls")),
 ]

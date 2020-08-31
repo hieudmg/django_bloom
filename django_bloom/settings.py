@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 from .secrets import *
+
 """
 secrets.py content:
 SECRET_KEY = '<SECRET_KEY>'
@@ -37,11 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'bloom.apps.BloomConfig',
-    'posts.apps.PostsConfig',
+    'post.apps.PostsConfig',
+    'account.apps.AccountConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'drf_yasg',
+    'bootstrapform',
 ]
 
 MIDDLEWARE = [
@@ -59,7 +63,7 @@ ROOT_URLCONF = 'django_bloom.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'account/templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -130,3 +134,6 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
+
+SITE_ID = 1
+LOGIN_REDIRECT_URL = '/account/profile'

@@ -11,7 +11,7 @@ class Posts(models.Model):
     slug = models.SlugField(unique=True)
 
     class Meta:
-        verbose_name_plural = "posts"
+        verbose_name_plural = "post"
 
     def __str__(self):
         return self.title

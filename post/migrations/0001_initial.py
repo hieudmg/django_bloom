@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField()),
                 ('slug', models.SlugField()),
                 ('is_root', models.BooleanField(default=False)),
-                ('parent_category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='posts.categories')),
+                ('parent_category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='post.categories')),
             ],
             options={
                 'verbose_name_plural': 'categories',
@@ -37,11 +37,11 @@ class Migration(migrations.Migration):
                 ('created_at', models.TimeField(auto_now_add=True)),
                 ('content', models.TextField()),
                 ('slug', models.SlugField(unique=True)),
-                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='posts.categories')),
+                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='post.categories')),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'verbose_name_plural': 'posts',
+                'verbose_name_plural': 'post',
             },
         ),
     ]
