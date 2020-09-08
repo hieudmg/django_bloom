@@ -45,15 +45,11 @@ except OperationalError:
     pass
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin_asfjnk/', admin.site.urls),
+    path('bloom/', include("bloom.urls")),
     path('rest/', include(router.urls)),
-    path('', include('bloom.urls')),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('api-auth/', include('rest_framework.urls')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    # path('login/', auth_views.LoginView.as_view(), name='login'),
-    # path('register/', auth_views.LoginView.as_view(), name='register'),
-    # path('logout/', auth_views.LogoutView.as_view(), {'next_page': 'login'}, name='logout'),
-
     path("account/", include("account.urls")),
 ]

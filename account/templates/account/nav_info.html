@@ -1,19 +1,26 @@
+{% load i18n %}
 {% if auth %}
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
-           aria-expanded="false"><i class="fas fa-user"></i> {{ user.get_short_name }}</a>
+           aria-expanded="false"><i class="fas fa-user"></i> {{ user }}</a>
         <div class="dropdown-menu">
-            <a class="dropdown-item" href="#">Trang cá nhân</a>
-            <a class="dropdown-item" href="{% url 'account:settings' %}">Cài đặt</a>
+            <a class="dropdown-item" href="{% url 'account:profile' %}">{% trans 'Profile' %}</a>
+            <a class="dropdown-item" href="{% url 'account:settings' %}">{% trans 'Settings' %}</a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="{% url 'account:logout' %}">Đăng xuất</a>
+            <a class="dropdown-item" href="{% url 'account:logout' %}">{% trans 'Log out' %}</a>
         </div>
     </li>
+
+    {% if user.is_staff %}
+        <li class="nav-item dropdown">
+            <a class="nav-link" href="{% url 'bloom:admin' %}">{% trans 'Admin' %}</a>
+        </li>
+    {% endif %}
 {% else %}
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'account:login' %}">Đăng nhập</a>
+        <a class="nav-link" href="{% url 'account:login' %}">{% trans 'Log in' %}</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'account:signup' %}">Đăng ký</a>
+        <a class="nav-link" href="{% url 'account:signup' %}">{% trans 'Sign up' %}</a>
     </li>
 {% endif %}

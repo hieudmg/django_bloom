@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class="col-lg-12 bg-primary">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -9,13 +10,13 @@
 
             <div class="collapse navbar-collapse" id="navbarColor01">
                 <form class="form-inline ">
-                    <input class="form-control mr-sm-2" type="text" placeholder="Search">
-                    <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                    <input class="form-control mr-sm-2" type="text" placeholder="{% trans 'Search something...' %}">
+                    <button class="btn btn-secondary my-2 my-sm-0" type="submit">{% trans 'Search' %}</button>
                 </form>
                 <ul class="navbar-nav ml-auto my-2 my-lg-0">
                     {% include './header/categories.html' %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Thông tin</a>
+                        <a class="nav-link" href="#">{% trans 'About' %}</a>
                     </li>
                     {% include 'account/nav_info.html' %}
                 </ul>

@@ -6,12 +6,18 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/flatly/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
 </head>
-<body>
+
+<body class="{% block body_class %}{% endblock %}">
 <div class="container-fluid">
     <div class="row">
         {% include 'includes/header.html' %}
     </div>
     <div class="container my-5">
+        <div class="row">
+            <h2 class="text-center col-md-12">{% block head_title %}{% endblock %}</h2>
+        </div>
+    </div>
+    <div class="container mb-5">
         {% block content %}
         {% endblock %}
     </div>
