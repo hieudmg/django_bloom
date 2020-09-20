@@ -1,0 +1,129 @@
+{% extends 'bloom/base.html' %}
+
+{% load i18n %}
+{% load bootstrap %}
+
+{% block css %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
+{% endblock %}
+
+{% block head_title %}{% trans "Admin" %}{% endblock %}
+
+{% block content %}
+    <table id="posts" class="table table-striped table-bordered" style="width:100%" data-server-side="true"
+           data-ajax="/rest/post/?format=datatables">
+    </table>
+    <div class="modal fade" id="post-delete-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"
+                        id="exampleModalLabel">{% trans 'Are you sure want to remove the post?' %}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="post-info"></div>
+                    {% trans 'This action can not be undone' %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans 'Cancel' %}</button>
+                    <button type="button" class="btn btn-danger confirm">{% trans 'Yes' %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascript %}
+    <script src="//cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"
+            integrity="sha512-zT3zHcFYbQwjHdKjCu6OMmETx8fJA9S7E6W7kBeFxultf75OPTYUJigEKX58qgyQMi1m1EgenfjMXlRZG8BXaw=="
+            crossorigin="anonymous"></script>
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        $(document).ready(function () {
+            let crudActionsTemplate = Handlebars.compile($('#crud-actions').html());
+            let postDatatable = $('#posts').DataTable({
+                ajax: '/rest/post/?format=datatables',
+                columns: [
+                    {
+                        data: 'id',
+                        title: 'ID'
+                    },
+                    {
+                        data: 'title',
+                        title: '{% trans 'Title' %}'
+                    },
+                    {
+                        data: 'slug',
+                        title: '{% trans 'Url key' %}'
+                    },
+                    {
+                        data: 'created_at',
+                        title: '{% trans 'Created at' %}'
+                    },
+                    {
+                        data: 'id',
+                        title: '',
+                        render: function (data, type, row) {
+                            if (type === 'display') {
+                                return crudActionsTemplate(row);
+                            }
+                            return data;
+                        }
+                    },
+                ]
+            });
+            $('#posts').on('click', '.actions .delete', function () {
+                let modal = $('#post-delete-modal');
+                modal.find('.post-info').text($(this).data('title'));
+                modal.find('.confirm').data('action', $(this).data('action'));
+            })
+            $('#post-delete-modal').on('click', '.confirm', function (event) {
+                $.ajax({
+                    url: $(this).data('action'),
+                    type: 'DELETE',
+                    headers: {"X-CSRFToken": csrftoken},
+                    success: function (result) {
+                    },
+                    complete: function () {
+                        $('#post-delete-modal').modal('hide');
+                        postDatatable.ajax.reload();
+                    }
+                });
+            })
+        });
+    </script>
+    {% verbatim %}
+    <script id="crud-actions" type="text/x-handlebars-template">
+        <div class="actions">
+            <a class="edit text-primary" href="/bloom/post/edit/{{ id }}/">
+                <i class="fa fa-pencil-alt"></i>
+            </a>
+            <a class="delete text-danger" data-action="/rest/post/{{ id }}/" data-title="{{ title }}"
+               data-target="#post-delete-modal" data-toggle="modal">
+                <i class="fa fa-trash"></i>
+            </a>
+        </div>
+    </script>
+    {% endverbatim %}
+{% endblock %}

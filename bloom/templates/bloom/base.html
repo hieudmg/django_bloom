@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,22 +9,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
           integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog=="
           crossorigin="anonymous"/>
+    <link rel="stylesheet" href="{% static 'bloom/css/sb-admin-2.min.css' %}">
+    {% block css %}
+    {% endblock %}
 </head>
 
 <body class="{% block body_class %}{% endblock %}">
-<div class="container-fluid">
-    <div class="row bloom">
-        <div class="sidebar">
-            {% include 'bloom/includes/sidebar.html' %}
-        </div>
-        <div class="content">
-            <div class="container my-5">
-                <div class="row">
-                    <h2 class="text-center col-md-12">{% block head_title %}{% endblock %}</h2>
-                </div>
-            </div>
-            <div class="container mb-5">
-                {% block content %}
+<div id="wrapper">
+    {% include 'bloom/includes/sidebar.html' %}
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+            {% include 'bloom/includes/nav.html' %}
+            <div class="container">
+                {% block content %}f
                 {% endblock %}
             </div>
         </div>
@@ -36,7 +35,8 @@
         crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"
         integrity="sha512-M5KW3ztuIICmVIhjSqXe01oV2bpe248gOxqmlcYrEzAvws7Pw3z6BK0iGbrwvdrUQUhi3eXgtxp5I8PDo9YfjQ=="
-        crossorigin="anonymous"></script>{% block javascript %}
+        crossorigin="anonymous"></script>
+{% block javascript %}
 {% endblock %}
 </body>
 </html>

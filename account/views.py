@@ -22,7 +22,7 @@ def signup(request):
             user.profile.school_class = form.cleaned_data.get('school_class')
             user.profile.save()
             current_site = get_current_site(request)
-            subject = 'Activate Your MySite Account'
+            subject = 'Activate Your Bloom Account'
             message = render_to_string('account/email/activation.html', {
                 'user': user,
                 'domain': request.build_absolute_uri('/'),
