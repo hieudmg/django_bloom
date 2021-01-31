@@ -1,0 +1,12 @@
+{% for category in render_categories %}
+    {% if category.categories_set.all.count > 0 %}
+        <div class="row">
+            <a class="dropdown-item dropdown-toggle" href="#">{{ category.name }}</a>
+            <div class="dropdown-menu">
+{#                {% include 'includes/header/categories/item.html' with render_categories=category.categories_set.all %}#}
+            </div>
+        </div>
+    {% else %}
+        <div><a class="dropdown-item" href="#">{{ category.name }}</a></div>
+    {% endif %}
+{% endfor %}

@@ -1,0 +1,139 @@
+.item-wrapper {
+  cursor: pointer;
+  padding-bottom: 1rem;
+
+  .item-actions {
+    display: none;
+  }
+
+  .item {
+    border: dashed 1px lightskyblue;
+    border-radius: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+
+    .name {
+      flex: 1
+    }
+  }
+
+
+  &.selected {
+    .item {
+      background-color: #bfebf5;
+
+      .item-actions {
+        display: block;
+        z-index: 10;
+        height: 0;
+
+        .btn {
+          font-size: 0.75rem;
+        }
+      }
+
+    }
+
+  }
+}
+
+.icon {
+  width: 4rem;
+  height: 4rem;
+  background: url("../icons/file.svg");
+  margin: auto;
+
+  &.name {
+    width: 6rem;
+    font-size: 0.75rem;
+  }
+
+  &.ex-avi {
+    background: url("../icons/avi.svg");
+  }
+
+  &.ex-css {
+    background: url("../icons/css.svg");
+  }
+
+  &.ex-csv {
+    background: url("../icons/csv.svg");
+  }
+
+  &.ex-doc, &.ex-docx {
+    background: url("../icons/doc.svg");
+  }
+
+  &.ex-html {
+    background: url("../icons/html.svg");
+  }
+
+  &.ex-js {
+    background: url("../icons/javascript.svg");
+  }
+
+  &.ex-jpg, &.ex-jpeg {
+    background: url("../icons/jpg.svg");
+  }
+
+  &.ex-json {
+    background: url("../icons/json-file.svg");
+  }
+
+  &.ex-mp3 {
+    background: url("../icons/mp3.svg");
+  }
+
+  &.ex-mp4 {
+    background: url("../icons/mp4.svg");
+  }
+
+  &.ex-pdf {
+    background: url("../icons/pdf.svg");
+  }
+
+  &.ex-psd {
+    background: url("../icons/psd.svg");
+  }
+
+  &.ex-png {
+    background: url("../icons/png.svg");
+  }
+
+  &.ex-ppt {
+    background: url("../icons/ppt.svg");
+  }
+
+  &.ex-rtf {
+    background: url("../icons/rtf.svg");
+  }
+
+  &.ex-svg {
+    background: url("../icons/svg.svg");
+  }
+
+  &.ex-txt {
+    background: url("../icons/txt.svg");
+  }
+
+  &.ex-xls, &.ex-xlsx {
+    background: url("../icons/xls.svg");
+  }
+
+  &.ex-zip {
+    background: url("../icons/zip.svg");
+  }
+
+  &.ex-rar, &.ex-7z {
+    background: url("../icons/zip-1.svg");
+  }
+
+  &.folder {
+    background: url("../icons/files-22.svg");
+  }
+}

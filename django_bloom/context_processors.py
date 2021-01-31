@@ -1,9 +1,19 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse, resolve
 from django.utils.translation import gettext as _
 
+from post.models import Category, Post
+
 
 def bloom_data(request):
-    result = {'categories': _('Here we go'), 'site_title': 'Bloom'}
+    root_category = None
+    try:
+        root_category = Category.objects.get(is_root=True)
+    except ObjectDoesNotExist:
+        pass
+
+    result = {'all_categories': Category.objects.all(), 'site_title': 'Bloom',
+              'root_category': root_category}
     if request.user.is_authenticated:
         result['auth'] = {'user': request.user}
 
@@ -15,8 +25,16 @@ def bloom_data(request):
                 {'text': _('All Post'), 'path': reverse('bloom:post:all')},
                 {'text': _('New Post'), 'path': reverse('bloom:post:new')},
             ]},
+            {'id': 3, 'text': _('Category'), 'path': '', 'icon_class': 'fa-file-alt', 'children': [
+                {'text': _('All Category'), 'path': reverse('bloom:category:all')},
+                {'text': _('New Category'), 'path': reverse('bloom:category:new')},
+            ]},
+            {'id': 4, 'text': _('File Manager'), 'path': reverse('bloom:file_manager:index'), 'icon_class': 'fa-folder'},
         ]
         result['bloom_sidebar'] = set_active(request, sidebar)
+    else:
+        result['latest_posts'] = Post.objects.all().order_by('-created_at')[:5]
+        result['most_viewed_posts'] = Post.objects.all().order_by('-views')[:5]
 
     return result
 

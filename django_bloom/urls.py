@@ -37,9 +37,9 @@ schema_view = get_schema_view(
 )
 
 try:
-    from post.models import Categories
-    if len(Categories.objects.all()) == 0:
-        root = Categories(parent_category=None, is_root=True, name='root', description='root', slug='')
+    from post.models import Category
+    if len(Category.objects.all()) == 0:
+        root = Category(parent_category=None, is_root=True, name='root', description='root', slug='')
         root.save()
 except OperationalError:
     pass
@@ -47,8 +47,10 @@ except OperationalError:
 urlpatterns = [
     path('admin_asfjnk/', admin.site.urls),
     path('bloom/', include("bloom.urls")),
+    path('post/', include("post.urls")),
+    path('category/', include("post.category_urls")),
     path('rest/', include(router.urls)),
-    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('', TemplateView.as_view(template_name='frontend/home.html'), name='home'),
     path('api-auth/', include('rest_framework.urls')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path("account/", include("account.urls")),

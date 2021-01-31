@@ -1,0 +1,108 @@
+.item-wrapper {
+  cursor: pointer;
+  padding-bottom: 1rem;
+}
+.item-wrapper .item-actions {
+  display: none;
+}
+.item-wrapper .item {
+  border: dashed 1px lightskyblue;
+  border-radius: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+.item-wrapper .item .name {
+  flex: 1;
+}
+.item-wrapper.selected .item {
+  background-color: #bfebf5;
+}
+.item-wrapper.selected .item .item-actions {
+  display: block;
+  z-index: 10;
+  height: 0;
+}
+.item-wrapper.selected .item .item-actions .btn {
+  font-size: 0.75rem;
+}
+
+.icon {
+  width: 4rem;
+  height: 4rem;
+  background: url("../icons/file.svg");
+  margin: auto;
+}
+.icon.name {
+  width: 6rem;
+  font-size: 0.75rem;
+}
+.icon.ex-avi {
+  background: url("../icons/avi.svg");
+}
+.icon.ex-css {
+  background: url("../icons/css.svg");
+}
+.icon.ex-csv {
+  background: url("../icons/csv.svg");
+}
+.icon.ex-doc, .icon.ex-docx {
+  background: url("../icons/doc.svg");
+}
+.icon.ex-html {
+  background: url("../icons/html.svg");
+}
+.icon.ex-js {
+  background: url("../icons/javascript.svg");
+}
+.icon.ex-jpg, .icon.ex-jpeg {
+  background: url("../icons/jpg.svg");
+}
+.icon.ex-json {
+  background: url("../icons/json-file.svg");
+}
+.icon.ex-mp3 {
+  background: url("../icons/mp3.svg");
+}
+.icon.ex-mp4 {
+  background: url("../icons/mp4.svg");
+}
+.icon.ex-pdf {
+  background: url("../icons/pdf.svg");
+}
+.icon.ex-psd {
+  background: url("../icons/psd.svg");
+}
+.icon.ex-png {
+  background: url("../icons/png.svg");
+}
+.icon.ex-ppt {
+  background: url("../icons/ppt.svg");
+}
+.icon.ex-rtf {
+  background: url("../icons/rtf.svg");
+}
+.icon.ex-svg {
+  background: url("../icons/svg.svg");
+}
+.icon.ex-txt {
+  background: url("../icons/txt.svg");
+}
+.icon.ex-xls, .icon.ex-xlsx {
+  background: url("../icons/xls.svg");
+}
+.icon.ex-zip {
+  background: url("../icons/zip.svg");
+}
+.icon.ex-rar, .icon.ex-7z {
+  background: url("../icons/zip-1.svg");
+}
+.icon.folder {
+  background: url("../icons/files-22.svg");
+}
+
+/*# sourceMappingURL=files.css.map */

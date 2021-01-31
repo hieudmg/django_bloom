@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="container-fluid latest_posts">
+    <div class="title">{% trans 'Latest Posts' %}</div>
+    <div class="container posts">
+        {% for post in latest_posts %}
+            {% include 'frontend/includes/sidebar/post.html' with post=post %}
+        {% endfor %}
+    </div>
+</div>
+<div class="container-fluid most_viewed_posts">
+    <div class="title">{% trans 'Most Viewed Posts' %}</div>
+    <div class="container posts">
+        {% for post in most_viewed_posts %}
+            {% include 'frontend/includes/sidebar/post.html' with post=post %}
+        {% endfor %}
+    </div>
+</div>

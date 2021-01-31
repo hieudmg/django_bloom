@@ -1,0 +1,50 @@
+{% extends 'frontend/base.html' %}
+{% block HeadTitle %}{{ category.name }}{% endblock %}
+
+{% block content %}
+    <div class="category-container">
+        <ol class="breadcrumb">
+            {% for ancestor in category.get_parent_categories %}
+                <li class="breadcrumb-item">
+                    {% if ancestor.id is not 1 %}
+                        {% if ancestor.id == category.id %}
+                            {{ ancestor.name }}
+                        {% else %}
+                            <a href="{% url "category:view" pk=ancestor.id %}">{{ ancestor.name }}</a>
+                        {% endif %}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ol>
+        <h3 class="name">{{ category.name }}</h3>
+        <div class="content">
+            {{ category.description }}
+        </div>
+    </div>
+    <div class="post-list">
+        {% for post in posts %}
+            <a href="{% url "post:view" pk=post.pk %}">
+                <div class="post">
+                    {{ post.title }}
+                </div>
+            </a>
+        {% endfor %}
+        <nav>
+            <ul class="pagination">
+                <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                    <a class="page-link" href="#" tabindex="-1">&laquo;</a>
+                </li>
+                {% with ''|center:page as range %}
+                    {% for _ in range %}
+                        <li class="page-item {% if page == forloop.counter %}active{% endif %}">
+                            <a class="page-link" href="#">{{ forloop.counter }}</a>
+                        </li>
+                    {% endfor %}
+                {% endwith %}
+                <li class="page-item {% if page == max_pages %}disabled{% endif %}">
+                    <a class="page-link" href="#">&raquo;</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}

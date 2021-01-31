@@ -1,0 +1,78 @@
+{% extends 'bloom/base.html' %}
+
+{% load i18n %}
+{% load bootstrap %}
+
+{% block css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css"/>
+{% endblock %}
+
+{% block head_title %}{% trans "Admin" %}{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div id="category-tree" class="col-md-4 col-sm-12">
+
+        </div>
+        <div id="category-edit" class="col-md-8 col-sm-12">
+            {% block category_edit %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
+{% block javascript %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        jQuery(function () {
+            $('#category-tree').jstree({
+                core: {
+                    data: [
+                        {% for category in all_categories %}
+                            {
+                                id: '{{ category.id }}',
+                                text: '{{ category.name }} (id: {{ category.id }})',
+                                parent: '{{ category.parent_category.id|default:'#' }}',
+                                {% if not category.is_root %}
+                                    a_attr: {"href": "{% url "bloom:category:edit" pk=category.id %}"},
+                                {% endif %}
+                                state: {
+                                    {% if category.id == categories.id %}
+                                        opened: true,
+                                        selected: true,
+                                    {% else %}
+                                        {% if category.is_root %}
+                                            disabled: true,
+                                            opened: true,
+                                        {% endif %}
+                                    {% endif %}
+                                }
+                            },
+                        {% endfor %}
+                    ]
+                }
+            });
+            $('#category-tree').on("select_node.jstree", function (e, data) {
+                location.href = data.node.a_attr.href;
+            });
+        });
+
+    </script>
+{% endblock %}

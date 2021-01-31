@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.redirects',
     'bloom.apps.BloomConfig',
     'post.apps.PostsConfig',
     'account.apps.AccountConfig',
@@ -63,7 +64,12 @@ ROOT_URLCONF = 'django_bloom.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'account/templates')]
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'account/templates'),
+            os.path.join(BASE_DIR, 'post/templates'),
+            os.path.join(BASE_DIR, 'file_manager/templates'),
+        ]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -125,6 +131,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 APPEND_SLASH = True
 
 REST_FRAMEWORK = {

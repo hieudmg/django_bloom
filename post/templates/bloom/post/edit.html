@@ -1,15 +1,38 @@
 {% extends 'bloom/base.html' %}
 
 {% load i18n %}
+{% load static %}
 {% load bootstrap %}
 
 {% block head_title %}{% trans "Admin" %}{% endblock %}
 
 {% block content %}
-    <form method="POST" action="{% url "bloom:post:edit" pk=posts.pk %}" autocapitalize="off" {% if form.is_multipart %}
+    <form method="POST" action="{% url "bloom:post:edit" pk=post.pk %}" autocapitalize="off" {% if form.is_multipart %}
           enctype="multipart/form-data"{% endif %}>
         {% csrf_token %}
         {{ form|bootstrap }}
         <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
     </form>
+{% endblock %}
+
+{% block javascript %}
+    {{ block.super }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.5.1/tinymce.min.js"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea#id_content',
+            plugins: 'image code preview',
+            external_plugins: {
+                'tiny_mce_wiris': '{% static 'bloom/mathtype/plugin.min.js' %}',
+                'file_manager': '{% static 'bloom/file_manager/plugin.js' %}',
+            },
+            toolbar: 'undo redo | file_manager | tiny_mce_wiris_formulaEditor tiny_mce_wiris_formulaEditorChemistry | preview',
+            images_upload_url: '/file/upload',
+            image_title: true,
+            automatic_uploads: true,
+            block_unsupported_drop: true,
+            file_picker_types: 'file image media'
+
+        });
+    </script>
 {% endblock %}

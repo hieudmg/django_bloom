@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from post.models import Posts, Categories
+from post.models import Post, Category
 from .serializers import PostsSerializer, CategoriesSerializer
 from rest_framework import permissions
 
@@ -11,12 +11,12 @@ class IsAdminUserOrReadOnly(permissions.IsAdminUser):
 
 
 class PostsViewSet(viewsets.ModelViewSet):
-    queryset = Posts.objects.all()
+    queryset = Post.objects.all()
     serializer_class = PostsSerializer
     permission_classes = [IsAdminUserOrReadOnly]
 
 
 class CategoriesViewSet(viewsets.ModelViewSet):
-    queryset = Categories.objects.all()
+    queryset = Category.objects.all()
     serializer_class = CategoriesSerializer
     permission_classes = [IsAdminUserOrReadOnly]

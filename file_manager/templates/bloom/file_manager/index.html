@@ -1,0 +1,351 @@
+{% extends 'bloom/base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4" id="folder-tree"></div>
+            <div class="col-md-8">
+                <div class="container">
+                    <div id="folder-content" class="row">
+                        <div class="empty-message text-center col-md-12"
+                             data-bind="visible: !currentFolderContent().length">{% trans 'Empty directory' %}</div>
+
+                        <!-- ko foreach: currentFolderContent -->
+                        <div class="item-wrapper col-xl-3 col-lg-4 col-md-6 col-sm-12"
+                             data-bind="css: {selected: $data.selected}">
+                            <div class="item"
+                                 data-bind="attr: {'data-id': id},
+                                        click: $parent.nodeClick">
+                                <div class="item-actions">
+                                    <div class="btn-group" role="group">
+                                        <!-- ko if: isDir -->
+                                        <button type="button" class="item-action open btn btn-primary"
+                                                data-bind="click: $parent.openFolder"
+                                                title="{% trans 'Open' %}">
+                                            <i class="fa fa-folder-open"></i>
+                                        </button>
+                                        <!-- /ko -->
+                                        <button type="button" class="item-action rename btn btn-primary"
+                                                data-bind="click: $parent.nodeRename"
+                                                title="{% trans 'Rename' %}">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="item-action trash btn btn-danger"
+                                                data-bind="click: $parent.nodeTrash"
+                                                title="{% trans 'Delete' %}">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="icon center" data-bind="class: cssClass"></div>
+                                <div class="name text-center text-break" data-bind="text: text"></div>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                        <div class="item-wrapper col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                            <div class="item">
+                                <div class="btn-group-vertical">
+                                    <button class="btn btn-success upload-file" data-bind="click: uploadFile"><i
+                                            class="fa fa-file-upload"></i> {% trans 'Upload File' %}</button>
+                                    <button class="btn btn-warning create-folder" data-bind="click: newFolder"><i
+                                            class="fa fa-folder-plus"></i> {% trans 'Add Folder' %}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css"/>
+    <link rel="stylesheet" href="{% static 'css/files.css' %}">
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        require([
+                'jquery',
+                'ko',
+                'get-cookie',
+                'bootbox',
+                'jstree'
+            ], function ($, ko, getCookie, bootbox) {
+                const csrfToken = getCookie('csrftoken');
+                const baseUrl = '{% url "bloom:file_manager:rest" absolute_path="_1_" %}';
+                const dummy = () => null;
+                let folderTree = $('#folder-tree');
+
+                const loadFolderContent = function (node, callback) {
+                    $.ajax(baseUrl.replace('_1_', btoa(node.relative))).done(response => callback(response));
+                }
+
+                const renameNode = function (node, callback = dummy) {
+                    $.ajax({
+                        url: baseUrl.replace('_1_', btoa(node.relative)),
+                        method: 'PATCH',
+                        data: JSON.stringify({name: node.text}),
+                        processData: false,
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        },
+                        contentType: 'application/json',
+                    }).done(callback);
+                }
+
+                const deleteNode = function (node, callback = dummy) {
+                    $.ajax({
+                        url: baseUrl.replace('_1_', btoa(node.relative)),
+                        method: 'DELETE',
+                        processData: false,
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        },
+                        contentType: 'application/json',
+                    }).done(callback);
+                }
+
+                const newFolder = function (parent, name, callback = dummy) {
+                    $.ajax({
+                        url: baseUrl.replace('_1_', btoa(parent.relative + '/' + name)),
+                        method: 'POST',
+                        processData: false,
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        },
+                        contentType: 'application/json',
+                    }).done(callback);
+                }
+
+                const uploadFile = function (parent, file, callback = dummy) {
+                    let form = new FormData();
+                    form.append("file", file);
+
+                    $.ajax({
+                        url: baseUrl.replace('_1_', btoa(parent.relative)),
+                        method: "PUT",
+                        processData: false,
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        },
+                        mimeType: "multipart/form-data",
+                        contentType: false,
+                        data: form,
+                    }).done(callback);
+                }
+
+                const openFolder = function (node) {
+                    folderTree.jstree('deselect_all');
+                    folderTree.jstree('open_node', node);
+                    folderTree.jstree('select_node', node.id, true);
+                }
+
+                let folderViewModel = new function () {
+                    let self = this;
+                    self.currentFolderContent = ko.observableArray([]);
+                    self.currentNodeInfo = ko.observable({});
+                    self.nodeClick = function (node, event) {
+                        let currentFolderContent = self.currentFolderContent();
+                        if (node.renaming) {
+                            event.keyCode = 13;
+                            self.inputOnKey(node, event);
+                        }
+                        currentFolderContent = currentFolderContent.map(function (item) {
+                            item.selected = false;
+                            item.renaming = false;
+                            return item;
+                        });
+                        node.selected = true;
+                        self.currentFolderContent([]);
+                        self.currentFolderContent(currentFolderContent);
+                    };
+                    self.nodeRename = function (node, event) {
+                        bootbox.prompt({
+                            title: '{% trans "Rename " %}' + node.text,
+                            value: node.text,
+                            callback: function (result) {
+                                if (result && result !== node.text) {
+                                    node.text = result;
+                                    renameNode(node, function () {
+                                        loadFolderContent(self.currentNodeInfo(), function (response) {
+                                            self.currentFolderContent(response);
+                                        });
+                                        folderTree.jstree("refresh");
+                                    });
+                                }
+                            }
+                        });
+                    };
+                    self.nodeTrash = function (node) {
+                        bootbox.confirm('{% trans 'Are you sure want to delete this?' %}', function (result) {
+                            if (result) {
+                                deleteNode(node, function () {
+                                    loadFolderContent(self.currentNodeInfo(), function (response) {
+                                        self.currentFolderContent(response);
+                                    });
+                                    folderTree.jstree("refresh");
+                                })
+                            }
+                        });
+                    };
+                    self.inputOnKey = function (node, event) {
+                        if (event.keyCode === 13) {
+                            renameNode(node, function () {
+                                loadFolderContent(self.currentNodeInfo(), function (response) {
+                                    self.currentFolderContent(response);
+                                });
+                                folderTree.jstree("refresh");
+                            });
+                        } else if (event.keyCode === 27) {
+                            node.newText = node.text;
+                            node.renaming = false;
+                            let currentFolderContent = self.currentFolderContent();
+                            self.currentFolderContent([]);
+                            self.currentFolderContent(currentFolderContent);
+                        }
+                        return true;
+                    };
+                    self.openFolder = openFolder;
+                    self.newFolder = function () {
+                        bootbox.prompt('{% trans "New Folder" %}', function (result) {
+                            if (result) {
+                                newFolder(self.currentNodeInfo(), result, function () {
+                                    loadFolderContent(self.currentNodeInfo(), function (response) {
+                                        self.currentFolderContent(response);
+                                    });
+                                });
+                            }
+                        });
+                    }
+                    self.uploadFile = function () {
+                        let inputId = 'file-upload-' + (new Date().getTime());
+                        bootbox.dialog({
+                            title: '{% trans "Upload File" %}',
+                            message: `<input type="file" id="${inputId}" class="input">`,
+                            buttons: {
+                                cancel: {
+                                    label: "Cancel",
+                                    className: 'btn-default',
+                                },
+                                ok: {
+                                    label: "Upload",
+                                    className: 'btn-info',
+                                    callback: function () {
+                                        let file = $('#' + inputId)[0].files[0];
+                                        uploadFile(self.currentNodeInfo(), file, function (response) {
+                                            loadFolderContent(self.currentNodeInfo(), function (response) {
+                                                self.currentFolderContent(response);
+                                            });
+                                        })
+                                    }
+                                }
+                            },
+                        });
+                    }
+                }();
+
+                ko.applyBindings(folderViewModel, $('#folder-content')[0]);
+
+                folderTree.jstree({
+                    'core': {
+                        "check_callback": true,
+                        'data': function (obj, callback) {
+                            let self = this;
+                            let baseUrl = '{% url "bloom:file_manager:rest" absolute_path="_1_" %}';
+                            if (obj.id === '#') {
+                                callback.call(self, {
+                                    id: 'root',
+                                    class: 'folder',
+                                    text: '{% trans 'Root' %}',
+                                    relative: "/",
+                                    isDir: true,
+                                    children: true,
+                                    state: {
+                                        selected: true,
+                                        expanded: true
+                                    }
+                                });
+                            } else {
+                                loadFolderContent(
+                                    obj.original,
+                                    function (response) {
+                                        callback.call(self, response.filter((node) => node.isDir));
+                                    }
+                                );
+                            }
+                        }
+                    }
+                });
+
+                {#function navigate(node) {#}
+                {#    currentFolder.id = node.id;#}
+                {#    folderContent.html('Loading...');#}
+                {#    $.get(node.list, function (data) {#}
+                {#        let content = '';#}
+                {#        currentFolder.children = data;#}
+                {#        for (let item of data) {#}
+                {#            content +=#}
+                {#                `<div class="item ${item.class}" id="${item.id}">#}
+                {#                    <div class="icon center"></div>#}
+                {#                    <div class="name text-center text-break">${item.text}</div>#}
+                {#                </div>`#}
+                {#        }#}
+                {#        folderContent.html(content);#}
+                {#    })#}
+                {# } #}
+
+                folderTree.on("loaded.jstree", function () {
+                    let rootId = folderTree.jstree('get_selected')[0];
+                    $('#' + rootId + ' > .jstree-anchor').click();
+                });
+
+                folderTree.on("select_node.jstree", function (e, data) {
+                    folderTree.jstree('open_node', data.node.original);
+                    loadFolderContent(data.node.original, function (response) {
+                        folderViewModel.currentNodeInfo(data.node.original);
+                        folderViewModel.currentFolderContent(response);
+                    });
+                });
+
+                {#folderContent.on('dblclick', '.item.folder', function () {#}
+                {#    for (let item of currentFolder.children) {#}
+                {#        if (item.id === $(this).attr('id')) {#}
+                {#            folderTree.jstree('deselect_all');#}
+                {#            folderTree.jstree('open_node', item);#}
+                {#            folderTree.jstree('select_node', item.id, true);#}
+                {#            break;#}
+                {#        }#}
+                {#    }#}
+                {# });#}
+
+                {#folderContent.on('click', '.item', function () {#}
+                {#    let selected = $(this).hasClass('selected');#}
+                {#    folderContent.find('.item').removeClass('selected');#}
+                {#    if (!selected) {#}
+                {#        $(this).addClass('selected');#}
+                {#    }#}
+                {# })#}
+
+                function createFolder(name) {
+                    folderTree.jstree(
+                        'create_node',
+                        folderTree.jstree('get_selected')[0],
+                        {
+                            "id": "c3",
+                            "text": "Child 3"
+                        },
+                        "last",
+                        function () {
+                            alert("Child created");
+                        }
+                    );
+                }
+            }
+        )
+
+    </script>
+{% endblock %}

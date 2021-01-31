@@ -23,7 +23,7 @@ def signup(request):
             user.profile.save()
             current_site = get_current_site(request)
             subject = 'Activate Your Bloom Account'
-            message = render_to_string('account/email/activation.html', {
+            message = render_to_string('frontend/account/email/activation.html', {
                 'user': user,
                 'domain': request.build_absolute_uri('/'),
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
@@ -33,11 +33,11 @@ def signup(request):
             return redirect('account:activation_sent')
     else:
         form = SignUpForm()
-    return render(request, 'account/signup.html', {'form': form})
+    return render(request, 'frontend/account/signup.html', {'form': form})
 
 
 def activation_sent(request):
-    return render(request, 'account/activation_sent.html')
+    return render(request, 'frontend/account/activation_sent.html')
 
 
 def activate(request, uidb64, token):
@@ -54,11 +54,11 @@ def activate(request, uidb64, token):
         login(request, user)
         return redirect('home')
     else:
-        return render(request, 'account/activation_invalid.html')
+        return render(request, 'frontend/account/activation_invalid.html')
 
 
 def user_settings(request):
-    return render(request, 'account/settings.html', {})
+    return render(request, 'frontend/account/settings.html', {})
 
 
 def user_logout(request):
@@ -67,9 +67,10 @@ def user_logout(request):
 
 
 def profile(request):
-    return render(request, 'account/profile.html', {})
+    return render(request, 'frontend/account/profile.html', {})
 
 
 class LoginView(auth_views.LoginView):
     redirect_authenticated_user = True
+    template_name = 'frontend/registration/login.html'
     pass
